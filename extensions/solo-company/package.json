@@ -1,11 +1,23 @@
 {
   "name": "@openclaw/solo-company",
-  "version": "2026.3.22",
-  "private": true,
+  "version": "0.1.0",
   "description": "OpenClaw one-person company multi-role AI collaboration plugin",
+  "files": [
+    "dist",
+    "openclaw.plugin.json",
+    "config-example.json"
+  ],
   "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@sinclair/typebox": "0.34.48"
+  },
   "devDependencies": {
-    "openclaw": "workspace:*"
+    "openclaw": "workspace:*",
+    "typescript": "^5.9.0"
   },
   "peerDependencies": {
     "openclaw": ">=2026.3.22"
@@ -17,7 +29,13 @@
   },
   "openclaw": {
     "extensions": [
-      "./index.ts"
-    ]
+      "./dist/index.js"
+    ],
+    "install": {
+      "npmSpec": "@openclaw/solo-company"
+    },
+    "release": {
+      "publishToNpm": true
+    }
   }
 }

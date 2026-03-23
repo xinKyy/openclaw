@@ -2728,14 +2728,17 @@ export const GENERATED_BUNDLED_PLUGIN_METADATA = [
     dirName: "solo-company",
     idHint: "solo-company",
     source: {
-      source: "./index.ts",
-      built: "index.js",
+      source: "./dist/index.js",
+      built: "dist/index.js",
     },
     packageName: "@openclaw/solo-company",
-    packageVersion: "2026.3.22",
+    packageVersion: "0.1.0",
     packageDescription: "OpenClaw one-person company multi-role AI collaboration plugin",
     packageManifest: {
-      extensions: ["./index.ts"],
+      extensions: ["./dist/index.js"],
+      install: {
+        npmSpec: "@openclaw/solo-company",
+      },
     },
     manifest: {
       id: "solo-company",
