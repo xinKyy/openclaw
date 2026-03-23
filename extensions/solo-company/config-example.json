@@ -1,0 +1,59 @@
+{
+  "$schema": "Solo Company example OpenClaw configuration",
+  "_comment": "Add this to your openclaw.json to configure the solo company system",
+
+  "agents": {
+    "default": {
+      "memorySearch": {
+        "enabled": true
+      }
+    },
+    "list": [
+      {
+        "id": "pm",
+        "workspace": "~/.openclaw/solo-company/workspaces/pm",
+        "model": {
+          "primary": "sonnet-4.6"
+        },
+        "identity": "你是一位经验丰富的产品经理。你负责需求分析、任务拆解和项目管理。使用 SOP 工具来管理工作流程，使用消息查询工具来了解团队讨论。",
+        "skills": ["project-workflow"],
+        "memorySearch": {
+          "enabled": true
+        }
+      },
+      {
+        "id": "dev",
+        "workspace": "~/.openclaw/solo-company/workspaces/dev",
+        "model": {
+          "primary": "sonnet-4.6"
+        },
+        "identity": "你是一位高级全栈开发工程师。你负责代码开发、部署和提交MR。按照 SOP 流程执行开发任务，使用相关技能完成 Git 操作、代码编写、Jenkins 部署和 MR 创建。",
+        "skills": ["coding-agent", "gitlab-ops", "jenkins-deploy", "gitlab-mr", "project-workflow"],
+        "memorySearch": {
+          "enabled": true
+        }
+      }
+    ]
+  },
+
+  "bindings": [
+    {
+      "_comment": "Route all messages from a specific Telegram group to PM agent",
+      "channel": "telegram",
+      "peer": "group:-1001234567890",
+      "agentId": "pm"
+    },
+    {
+      "_comment": "Route all messages from a dev-focused group to DEV agent",
+      "channel": "telegram",
+      "peer": "group:-1009876543210",
+      "agentId": "dev"
+    }
+  ],
+
+  "plugins": {
+    "solo-company": {
+      "dataDir": "~/.openclaw/solo-company"
+    }
+  }
+}

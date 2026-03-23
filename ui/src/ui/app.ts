@@ -402,6 +402,39 @@ export class OpenClawApp extends LitElement {
   @state() skillsBusyKey: string | null = null;
   @state() skillMessages: Record<string, SkillMessage> = {};
 
+  // Solo Company state
+  @state() soloRolesLoading = false;
+  @state() soloRoles: Array<Record<string, unknown>> = [];
+  @state() soloRolesError: string | null = null;
+  @state() soloRolesEditing: Record<string, unknown> | null = null;
+
+  @state() soloProjectsLoading = false;
+  @state() soloProjects: Record<string, Record<string, unknown>> = {};
+  @state() soloProjectsError: string | null = null;
+  @state() soloProjectsEditing: { id: string; project: Record<string, unknown> } | null = null;
+
+  @state() soloMessagesLoading = false;
+  @state() soloMessages: Array<Record<string, unknown>> = [];
+  @state() soloMessagesTotal = 0;
+  @state() soloMessagesError: string | null = null;
+  @state() soloMessagesFilters: Record<string, string | number> = {
+    group_id: "",
+    channel: "",
+    sender: "",
+    keyword: "",
+    date: "",
+    date_from: "",
+    date_to: "",
+    limit: 50,
+    offset: 0,
+  };
+
+  @state() soloSopLoading = false;
+  @state() soloSopDefinitions: Array<Record<string, unknown>> = [];
+  @state() soloSopTasks: Array<Record<string, unknown>> = [];
+  @state() soloSopError: string | null = null;
+  @state() soloSopSelectedTask: Record<string, unknown> | null = null;
+
   @state() healthLoading = false;
   @state() healthResult: HealthSummary | null = null;
   @state() healthError: string | null = null;

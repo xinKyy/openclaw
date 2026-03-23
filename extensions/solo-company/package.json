@@ -1,0 +1,23 @@
+{
+  "name": "@openclaw/solo-company",
+  "version": "2026.3.22",
+  "private": true,
+  "description": "OpenClaw one-person company multi-role AI collaboration plugin",
+  "type": "module",
+  "devDependencies": {
+    "openclaw": "workspace:*"
+  },
+  "peerDependencies": {
+    "openclaw": ">=2026.3.22"
+  },
+  "peerDependenciesMeta": {
+    "openclaw": {
+      "optional": true
+    }
+  },
+  "openclaw": {
+    "extensions": [
+      "./index.ts"
+    ]
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "id": "solo-company",
+  "name": "Solo Company",
+  "description": "One-person company multi-role AI collaboration system with SOP workflows, project registry, and message recording.",
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "dataDir": {
+        "type": "string",
+        "description": "Directory for solo-company data (SQLite DB, projects.json). Defaults to ~/.openclaw/solo-company"
+      }
+    }
+  },
+  "uiHints": {
+    "dataDir": {
+      "label": "Data Directory",
+      "help": "Directory for solo-company data storage (SQLite databases, project registry)."
+    }
+  }
+}

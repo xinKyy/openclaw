@@ -78,6 +78,17 @@ import {
   updateSkillEdit,
   updateSkillEnabled,
 } from "./controllers/skills.ts";
+import {
+  loadSoloRoles,
+  saveSoloRole,
+  deleteSoloRole,
+  loadSoloProjects,
+  saveSoloProject,
+  deleteSoloProject,
+  loadSoloMessages,
+  loadSoloSop,
+  loadSoloSopTask,
+} from "./controllers/solo-company.ts";
 import "./components/dashboard-header.ts";
 import { buildExternalLinkRel, EXTERNAL_LINK_TARGET } from "./external-link.ts";
 import { icons } from "./icons.ts";
@@ -130,6 +141,10 @@ const lazyLogs = createLazy(() => import("./views/logs.ts"));
 const lazyNodes = createLazy(() => import("./views/nodes.ts"));
 const lazySessions = createLazy(() => import("./views/sessions.ts"));
 const lazySkills = createLazy(() => import("./views/skills.ts"));
+const lazySoloRoles = createLazy(() => import("./views/solo-roles.ts"));
+const lazySoloProjects = createLazy(() => import("./views/solo-projects.ts"));
+const lazySoloMessages = createLazy(() => import("./views/solo-messages.ts"));
+const lazySoloSop = createLazy(() => import("./views/solo-sop.ts"));
 
 function lazyRender<M>(getter: () => M | null, render: (mod: M) => unknown) {
   const mod = getter();
@@ -1970,6 +1985,163 @@ export function renderApp(state: AppViewState) {
                   onRefresh: () => loadLogs(state, { reset: true }),
                   onExport: (lines, label) => state.exportLogs(lines, label),
                   onScroll: (event) => state.handleLogsScroll(event),
+                }),
+              )
+            : nothing
+        }
+
+        ${
+          state.tab === "soloRoles"
+            ? lazyRender(lazySoloRoles, (m) =>
+                m.renderSoloRoles({
+                  connected: state.connected,
+                  loading: state.soloRolesLoading,
+                  roles: state.soloRoles as never[],
+                  error: state.soloRolesError,
+                  editingRole: state.soloRolesEditing as never,
+                  onRefresh: () => loadSoloRoles(state),
+                  onAdd: () => {
+                    state.soloRolesEditing = {
+                      id: "",
+                      name: "",
+                      agentId: "",
+                      model: "sonnet-4.6",
+                      description: "",
+                      skills: [],
+                    };
+                  },
+                  onEdit: (role) => {
+                    state.soloRolesEditing = { ...role };
+                  },
+                  onSave: (role) => saveSoloRole(state, role as never),
+                  onDelete: (id) => deleteSoloRole(state, id),
+                  onCancel: () => {
+                    state.soloRolesEditing = null;
+                  },
+                  onFieldChange: (field, value) => {
+                    if (!state.soloRolesEditing) {
+                      return;
+                    }
+                    if (field === "skills") {
+                      state.soloRolesEditing = {
+                        ...state.soloRolesEditing,
+                        skills: (value as string)
+                          .split(",")
+                          .map((s: string) => s.trim())
+                          .filter(Boolean),
+                      };
+                    } else {
+                      state.soloRolesEditing = { ...state.soloRolesEditing, [field]: value };
+                    }
+                  },
+                }),
+              )
+            : nothing
+        }
+
+        ${
+          state.tab === "soloProjects"
+            ? lazyRender(lazySoloProjects, (m) =>
+                m.renderSoloProjects({
+                  connected: state.connected,
+                  loading: state.soloProjectsLoading,
+                  projects: state.soloProjects as never,
+                  error: state.soloProjectsError,
+                  editingProject: state.soloProjectsEditing as never,
+                  onRefresh: () => loadSoloProjects(state),
+                  onAdd: () => {
+                    state.soloProjectsEditing = {
+                      id: "",
+                      project: {
+                        repo: "",
+                        aliases: [],
+                        default_branch: "main",
+                        dev_branch: "dev",
+                        branches: {},
+                        description: "",
+                        jenkins_job: "",
+                      },
+                    };
+                  },
+                  onEdit: (id, project) => {
+                    state.soloProjectsEditing = { id, project: { ...project } };
+                  },
+                  onSave: (id, project) => saveSoloProject(state, id, project as never),
+                  onDelete: (id) => deleteSoloProject(state, id),
+                  onCancel: () => {
+                    state.soloProjectsEditing = null;
+                  },
+                  onFieldChange: (field, value) => {
+                    if (!state.soloProjectsEditing) {
+                      return;
+                    }
+                    if (field === "id") {
+                      state.soloProjectsEditing = { ...state.soloProjectsEditing, id: value };
+                    } else if (field === "aliases") {
+                      state.soloProjectsEditing = {
+                        ...state.soloProjectsEditing,
+                        project: {
+                          ...state.soloProjectsEditing.project,
+                          aliases: value
+                            .split(",")
+                            .map((s: string) => s.trim())
+                            .filter(Boolean),
+                        },
+                      };
+                    } else {
+                      state.soloProjectsEditing = {
+                        ...state.soloProjectsEditing,
+                        project: { ...state.soloProjectsEditing.project, [field]: value },
+                      };
+                    }
+                  },
+                }),
+              )
+            : nothing
+        }
+
+        ${
+          state.tab === "soloMessages"
+            ? lazyRender(lazySoloMessages, (m) =>
+                m.renderSoloMessages({
+                  connected: state.connected,
+                  loading: state.soloMessagesLoading,
+                  messages: state.soloMessages as never[],
+                  total: state.soloMessagesTotal,
+                  error: state.soloMessagesError,
+                  filters: state.soloMessagesFilters as never,
+                  onRefresh: () => loadSoloMessages(state),
+                  onFilterChange: (field, value) => {
+                    state.soloMessagesFilters = { ...state.soloMessagesFilters, [field]: value };
+                  },
+                  onSearch: async () => {
+                    state.soloMessagesFilters = { ...state.soloMessagesFilters, offset: 0 };
+                    await loadSoloMessages(state);
+                  },
+                  onPageChange: async (offset) => {
+                    state.soloMessagesFilters = { ...state.soloMessagesFilters, offset };
+                    await loadSoloMessages(state);
+                  },
+                }),
+              )
+            : nothing
+        }
+
+        ${
+          state.tab === "soloSop"
+            ? lazyRender(lazySoloSop, (m) =>
+                m.renderSoloSop({
+                  connected: state.connected,
+                  loading: state.soloSopLoading,
+                  definitions: state.soloSopDefinitions as never[],
+                  tasks: state.soloSopTasks as never[],
+                  error: state.soloSopError,
+                  selectedTask: state.soloSopSelectedTask as never,
+                  onRefresh: () => loadSoloSop(state),
+                  onSelectTask: (taskId) => loadSoloSopTask(state, taskId),
+                  onDeselectTask: () => {
+                    state.soloSopSelectedTask = null;
+                  },
                 }),
               )
             : nothing

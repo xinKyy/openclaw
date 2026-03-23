@@ -2725,6 +2725,43 @@ export const GENERATED_BUNDLED_PLUGIN_METADATA = [
     },
   },
   {
+    dirName: "solo-company",
+    idHint: "solo-company",
+    source: {
+      source: "./index.ts",
+      built: "index.js",
+    },
+    packageName: "@openclaw/solo-company",
+    packageVersion: "2026.3.22",
+    packageDescription: "OpenClaw one-person company multi-role AI collaboration plugin",
+    packageManifest: {
+      extensions: ["./index.ts"],
+    },
+    manifest: {
+      id: "solo-company",
+      configSchema: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          dataDir: {
+            type: "string",
+            description:
+              "Directory for solo-company data (SQLite DB, projects.json). Defaults to ~/.openclaw/solo-company",
+          },
+        },
+      },
+      name: "Solo Company",
+      description:
+        "One-person company multi-role AI collaboration system with SOP workflows, project registry, and message recording.",
+      uiHints: {
+        dataDir: {
+          label: "Data Directory",
+          help: "Directory for solo-company data storage (SQLite databases, project registry).",
+        },
+      },
+    },
+  },
+  {
     dirName: "synology-chat",
     idHint: "synology-chat",
     source: {

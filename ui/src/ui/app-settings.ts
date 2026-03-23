@@ -7,6 +7,7 @@ import {
   stopDebugPolling,
 } from "./app-polling.ts";
 import { scheduleChatScroll, scheduleLogsScroll } from "./app-scroll.ts";
+import type { AppViewState } from "./app-view-state.ts";
 import type { OpenClawApp } from "./app.ts";
 import { loadAgentIdentities, loadAgentIdentity } from "./controllers/agent-identity.ts";
 import { loadAgentSkills } from "./controllers/agent-skills.ts";
@@ -22,6 +23,12 @@ import { loadNodes } from "./controllers/nodes.ts";
 import { loadPresence } from "./controllers/presence.ts";
 import { loadSessions } from "./controllers/sessions.ts";
 import { loadSkills } from "./controllers/skills.ts";
+import {
+  loadSoloRoles,
+  loadSoloProjects,
+  loadSoloMessages,
+  loadSoloSop,
+} from "./controllers/solo-company.ts";
 import { loadUsage } from "./controllers/usage.ts";
 import {
   inferBasePathFromPathname,
@@ -289,6 +296,18 @@ export async function refreshActiveTab(host: SettingsHost) {
     host.logsAtBottom = true;
     await loadLogs(host as unknown as OpenClawApp, { reset: true });
     scheduleLogsScroll(host as unknown as Parameters<typeof scheduleLogsScroll>[0], true);
+  }
+  if (host.tab === "soloRoles") {
+    void loadSoloRoles(host as unknown as AppViewState);
+  }
+  if (host.tab === "soloProjects") {
+    void loadSoloProjects(host as unknown as AppViewState);
+  }
+  if (host.tab === "soloMessages") {
+    void loadSoloMessages(host as unknown as AppViewState);
+  }
+  if (host.tab === "soloSop") {
+    void loadSoloSop(host as unknown as AppViewState);
   }
 }
 

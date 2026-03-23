@@ -563,6 +563,12 @@ importers:
         specifier: ^7.15.0
         version: 7.15.0
 
+  extensions/solo-company:
+    devDependencies:
+      openclaw:
+        specifier: workspace:*
+        version: link:../..
+
   extensions/synology-chat:
     dependencies:
       zod:

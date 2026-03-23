@@ -9,6 +9,10 @@ export const TAB_GROUPS = [
   },
   { label: "agent", tabs: ["agents", "skills", "nodes"] },
   {
+    label: "soloCompany",
+    tabs: ["soloRoles", "soloProjects", "soloMessages", "soloSop"],
+  },
+  {
     label: "settings",
     tabs: [
       "config",
@@ -41,7 +45,11 @@ export type Tab =
   | "infrastructure"
   | "aiAgents"
   | "debug"
-  | "logs";
+  | "logs"
+  | "soloRoles"
+  | "soloProjects"
+  | "soloMessages"
+  | "soloSop";
 
 const TAB_PATHS: Record<Tab, string> = {
   agents: "/agents",
@@ -62,6 +70,10 @@ const TAB_PATHS: Record<Tab, string> = {
   aiAgents: "/ai-agents",
   debug: "/debug",
   logs: "/logs",
+  soloRoles: "/solo-roles",
+  soloProjects: "/solo-projects",
+  soloMessages: "/solo-messages",
+  soloSop: "/solo-sop",
 };
 
 const PATH_TO_TAB = new Map(Object.entries(TAB_PATHS).map(([tab, path]) => [path, tab as Tab]));
@@ -183,6 +195,14 @@ export function iconForTab(tab: Tab): IconName {
       return "bug";
     case "logs":
       return "scrollText";
+    case "soloRoles":
+      return "brain";
+    case "soloProjects":
+      return "folder";
+    case "soloMessages":
+      return "messageSquare";
+    case "soloSop":
+      return "loader";
     default:
       return "folder";
   }

@@ -22,6 +22,7 @@ export const en: TranslationMap = {
     control: "Control",
     agent: "Agent",
     settings: "Settings",
+    soloCompany: "Solo Company",
     expand: "Expand sidebar",
     collapse: "Collapse sidebar",
     resize: "Resize sidebar",
@@ -45,6 +46,10 @@ export const en: TranslationMap = {
     aiAgents: "AI & Agents",
     debug: "Debug",
     logs: "Logs",
+    soloRoles: "Roles",
+    soloProjects: "Projects",
+    soloMessages: "Messages",
+    soloSop: "SOP",
   },
   subtitles: {
     agents: "Workspaces, tools, identities.",
@@ -65,6 +70,10 @@ export const en: TranslationMap = {
     aiAgents: "Agents, models, skills, tools, memory, session.",
     debug: "Snapshots, events, RPC.",
     logs: "Live gateway logs.",
+    soloRoles: "AI roles and model assignments.",
+    soloProjects: "Project registry and config.",
+    soloMessages: "Browse recorded channel messages.",
+    soloSop: "SOP workflows and task tracking.",
   },
   overview: {
     access: {

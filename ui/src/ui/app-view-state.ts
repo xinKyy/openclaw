@@ -270,6 +270,26 @@ export type AppViewState = {
     skillEdits: Record<string, string>;
     skillMessages: Record<string, SkillMessage>;
     skillsBusyKey: string | null;
+    // Solo Company state
+    soloRolesLoading: boolean;
+    soloRoles: Array<Record<string, unknown>>;
+    soloRolesError: string | null;
+    soloRolesEditing: Record<string, unknown> | null;
+    soloProjectsLoading: boolean;
+    soloProjects: Record<string, Record<string, unknown>>;
+    soloProjectsError: string | null;
+    soloProjectsEditing: { id: string; project: Record<string, unknown> } | null;
+    soloMessagesLoading: boolean;
+    soloMessages: Array<Record<string, unknown>>;
+    soloMessagesTotal: number;
+    soloMessagesError: string | null;
+    soloMessagesFilters: Record<string, string | number>;
+    soloSopLoading: boolean;
+    soloSopDefinitions: Array<Record<string, unknown>>;
+    soloSopTasks: Array<Record<string, unknown>>;
+    soloSopError: string | null;
+    soloSopSelectedTask: Record<string, unknown> | null;
+
     healthLoading: boolean;
     healthResult: HealthSummary | null;
     healthError: string | null;
