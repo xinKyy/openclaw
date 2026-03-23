@@ -1,7 +1,14 @@
+import fs from "node:fs";
+import path from "node:path";
 import type { DatabaseSync } from "node:sqlite";
-import type { OpenClawPluginApi } from "../../api.js";
+import {
+  type OpenClawPluginApi,
+  readConfigFileSnapshotForWrite,
+  writeConfigFile,
+} from "../../api.js";
 import { ProjectRegistryManager } from "../projects/registry.js";
 import { SopEngine } from "../sop/engine.js";
+import type { RoleDefinition } from "../types.js";
 
 /**
  * Register gateway WebSocket methods that the Web UI calls.
@@ -17,8 +24,6 @@ export function registerGatewayMethods(
 
   // --- Roles ---
   api.registerGatewayMethod("soloCompany.roles.list", async ({ respond }) => {
-    const fs = await import("node:fs");
-    const path = await import("node:path");
     const filePath = path.join(dataDir, "roles.json");
     if (!fs.existsSync(filePath)) {
       respond(true, { roles: [] });
@@ -29,12 +34,79 @@ export function registerGatewayMethods(
   });
 
   api.registerGatewayMethod("soloCompany.roles.save", async ({ params, respond }) => {
-    const fs = await import("node:fs");
-    const path = await import("node:path");
     const filePath = path.join(dataDir, "roles.json");
     fs.mkdirSync(dataDir, { recursive: true });
     fs.writeFileSync(filePath, JSON.stringify(params, null, 2));
     respond(true, { ok: true });
+  });
+
+  // Apply role config to OpenClaw: writes agents.list, bindings, channels.telegram.accounts
+  api.registerGatewayMethod("soloCompany.roles.applyConfig", async ({ respond }) => {
+    try {
+      const filePath = path.join(dataDir, "roles.json");
+      if (!fs.existsSync(filePath)) {
+        respond(false, undefined, { code: "NO_ROLES", message: "No roles configured." });
+        return;
+      }
+      const rolesData = JSON.parse(fs.readFileSync(filePath, "utf-8")) as {
+        roles: RoleDefinition[];
+      };
+      const roles = rolesData.roles ?? [];
+
+      const { snapshot, writeOptions } = await readConfigFileSnapshotForWrite();
+      const cfg = structuredClone(snapshot.config ?? {}) as Record<string, unknown>;
+
+      // Build agents.list
+      const agentsList = roles.map((r) => ({
+        id: r.agentId,
+        ...(r.workspace ? { workspace: r.workspace } : {}),
+        model: r.model ? { default: r.model } : undefined,
+      }));
+
+      // Build bindings for roles with telegram tokens
+      const bindings = roles
+        .filter((r) => r.telegramBotToken)
+        .map((r) => ({
+          agentId: r.agentId,
+          match: { channel: "telegram", accountId: r.agentId },
+        }));
+
+      // Build telegram accounts
+      const telegramAccounts: Record<string, { botToken: string }> = {};
+      for (const r of roles) {
+        if (r.telegramBotToken) {
+          telegramAccounts[r.agentId] = { botToken: r.telegramBotToken };
+        }
+      }
+
+      // Merge into config
+      const agents = (cfg.agents ?? {}) as Record<string, unknown>;
+      agents.list = agentsList;
+      cfg.agents = agents;
+
+      cfg.bindings = bindings;
+
+      if (Object.keys(telegramAccounts).length > 0) {
+        const channels = (cfg.channels ?? {}) as Record<string, unknown>;
+        const telegram = (channels.telegram ?? {}) as Record<string, unknown>;
+        telegram.accounts = telegramAccounts;
+        channels.telegram = telegram;
+        cfg.channels = channels;
+      }
+
+      await writeConfigFile(cfg as never, writeOptions);
+      respond(true, {
+        ok: true,
+        agents: agentsList.length,
+        bindings: bindings.length,
+        telegramAccounts: Object.keys(telegramAccounts).length,
+      });
+    } catch (err) {
+      respond(false, undefined, {
+        code: "INTERNAL",
+        message: err instanceof Error ? err.message : String(err),
+      });
+    }
   });
 
   // --- Projects ---

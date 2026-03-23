@@ -24,6 +24,8 @@ export type RoleDefinition = {
   sopId?: string;
   description: string;
   skills?: string[];
+  telegramBotToken?: string;
+  workspace?: string;
 };
 
 export type SopStepDefinition = {

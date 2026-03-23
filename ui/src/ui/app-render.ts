@@ -82,6 +82,7 @@ import {
   loadSoloRoles,
   saveSoloRole,
   deleteSoloRole,
+  applySoloConfig,
   loadSoloProjects,
   saveSoloProject,
   deleteSoloProject,
@@ -1999,6 +2000,7 @@ export function renderApp(state: AppViewState) {
                   roles: state.soloRoles as never[],
                   error: state.soloRolesError,
                   editingRole: state.soloRolesEditing as never,
+                  applyingConfig: state.soloRolesApplying,
                   onRefresh: () => loadSoloRoles(state),
                   onAdd: () => {
                     state.soloRolesEditing = {
@@ -2018,6 +2020,7 @@ export function renderApp(state: AppViewState) {
                   onCancel: () => {
                     state.soloRolesEditing = null;
                   },
+                  onApplyConfig: () => applySoloConfig(state),
                   onFieldChange: (field, value) => {
                     if (!state.soloRolesEditing) {
                       return;

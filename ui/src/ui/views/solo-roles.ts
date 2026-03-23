@@ -6,6 +6,7 @@ export type SoloRolesProps = {
   roles: SoloRole[];
   error: string | null;
   editingRole: SoloRole | null;
+  applyingConfig: boolean;
   onRefresh: () => void;
   onAdd: () => void;
   onEdit: (role: SoloRole) => void;
@@ -13,6 +14,7 @@ export type SoloRolesProps = {
   onDelete: (id: string) => void;
   onCancel: () => void;
   onFieldChange: (field: string, value: string | string[]) => void;
+  onApplyConfig: () => void;
 };
 
 export type SoloRole = {
@@ -23,6 +25,8 @@ export type SoloRole = {
   sopId?: string;
   description: string;
   skills?: string[];
+  telegramBotToken?: string;
+  workspace?: string;
 };
 
 export function renderSoloRoles(props: SoloRolesProps) {
@@ -36,6 +40,11 @@ export function renderSoloRoles(props: SoloRolesProps) {
         <div class="row" style="gap: 8px;">
           <button class="btn" ?disabled=${props.loading || !props.connected} @click=${props.onRefresh}>
             ${props.loading ? "Loading…" : "Refresh"}
+          </button>
+          <button class="btn" ?disabled=${props.applyingConfig || !props.connected || props.roles.length === 0}
+            @click=${props.onApplyConfig}
+            title="将角色配置同步到 OpenClaw 网关（agents、bindings、Telegram accounts）">
+            ${props.applyingConfig ? "Applying…" : "⚙ Apply to Gateway"}
           </button>
           <button class="btn primary" ?disabled=${!props.connected} @click=${props.onAdd}>
             + Add Role
@@ -96,6 +105,20 @@ function renderRoleForm(props: SoloRolesProps) {
           <input .value=${(role.skills ?? []).join(", ")}
             @input=${(e: Event) => props.onFieldChange("skills", (e.target as HTMLInputElement).value)} />
         </label>
+        <div style="grid-column: span 2; border-top: 1px solid var(--border-color); margin: 4px 0; padding-top: 8px;">
+          <span style="font-size: 12px; color: var(--text-muted);">Channel Configuration</span>
+        </div>
+        <label class="field" style="grid-column: span 2;">
+          <span>Telegram Bot Token</span>
+          <input type="password" .value=${role.telegramBotToken ?? ""} placeholder="123456:ABC-DEF..."
+            autocomplete="off"
+            @input=${(e: Event) => props.onFieldChange("telegramBotToken", (e.target as HTMLInputElement).value)} />
+        </label>
+        <label class="field" style="grid-column: span 2;">
+          <span>Workspace Path</span>
+          <input .value=${role.workspace ?? ""} placeholder="~/.openclaw/workspace-${role.id || "agent"}"
+            @input=${(e: Event) => props.onFieldChange("workspace", (e.target as HTMLInputElement).value)} />
+        </label>
       </div>
       <div class="row" style="gap: 8px; margin-top: 12px; justify-content: flex-end;">
         <button class="btn" @click=${props.onCancel}>Cancel</button>
@@ -114,6 +137,13 @@ function renderRoleItem(role: SoloRole, props: SoloRolesProps) {
         <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px;">
           <span class="chip">Model: ${role.model}</span>
           ${role.sopId ? html`<span class="chip">SOP: ${role.sopId}</span>` : nothing}
+          ${
+            role.telegramBotToken
+              ? html`
+                  <span class="chip" style="background: #0088cc20; color: #0088cc">Telegram</span>
+                `
+              : nothing
+          }
           ${(role.skills ?? []).map((s) => html`<span class="chip muted">${s}</span>`)}
         </div>
       </div>

@@ -407,6 +407,7 @@ export class OpenClawApp extends LitElement {
   @state() soloRoles: Array<Record<string, unknown>> = [];
   @state() soloRolesError: string | null = null;
   @state() soloRolesEditing: Record<string, unknown> | null = null;
+  @state() soloRolesApplying = false;
 
   @state() soloProjectsLoading = false;
   @state() soloProjects: Record<string, Record<string, unknown>> = {};

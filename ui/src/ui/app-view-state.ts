@@ -275,6 +275,7 @@ export type AppViewState = {
     soloRoles: Array<Record<string, unknown>>;
     soloRolesError: string | null;
     soloRolesEditing: Record<string, unknown> | null;
+    soloRolesApplying: boolean;
     soloProjectsLoading: boolean;
     soloProjects: Record<string, Record<string, unknown>>;
     soloProjectsError: string | null;

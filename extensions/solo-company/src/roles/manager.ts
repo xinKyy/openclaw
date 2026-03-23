@@ -67,18 +67,40 @@ class RoleManager {
   }
 
   /**
-   * Generate agents.list and bindings config snippets
-   * that should be merged into the OpenClaw config.
+   * Generate the full OpenClaw config snippet: agents.list, bindings,
+   * and channels.telegram.accounts derived from role definitions.
    */
-  toAgentConfig(): { agents: Array<{ id: string; model: string; skills: string[] }> } {
+  toFullConfig(): {
+    agents: Array<{ id: string; model: string; skills: string[]; workspace?: string }>;
+    bindings: Array<{ agentId: string; match: { channel: string; accountId: string } }>;
+    telegramAccounts: Record<string, { botToken: string }>;
+  } {
     const roles = this.list();
-    return {
-      agents: roles.map((r) => ({
+    const agents: Array<{ id: string; model: string; skills: string[]; workspace?: string }> = [];
+    const bindings: Array<{
+      agentId: string;
+      match: { channel: string; accountId: string };
+    }> = [];
+    const telegramAccounts: Record<string, { botToken: string }> = {};
+
+    for (const r of roles) {
+      agents.push({
         id: r.agentId,
         model: r.model,
         skills: r.skills ?? [],
-      })),
-    };
+        ...(r.workspace ? { workspace: r.workspace } : {}),
+      });
+
+      if (r.telegramBotToken) {
+        bindings.push({
+          agentId: r.agentId,
+          match: { channel: "telegram", accountId: r.agentId },
+        });
+        telegramAccounts[r.agentId] = { botToken: r.telegramBotToken };
+      }
+    }
+
+    return { agents, bindings, telegramAccounts };
   }
 }
 
@@ -173,7 +195,7 @@ export function registerRoleTools(api: OpenClawPluginApi, dataDir: string): void
           return jsonToolResult({
             success: true,
             message: `Role "${p.id}" added.`,
-            agentConfig: mgr.toAgentConfig(),
+            agentConfig: mgr.toFullConfig(),
           });
         } catch (err) {
           return jsonToolResult({ error: err instanceof Error ? err.message : String(err) });

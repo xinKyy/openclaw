@@ -52,6 +52,27 @@ export async function deleteSoloRole(state: State, id: string): Promise<void> {
   }
 }
 
+export async function applySoloConfig(state: State): Promise<void> {
+  if (!state.client) {
+    return;
+  }
+  state.soloRolesApplying = true;
+  state.soloRolesError = null;
+  try {
+    const result = await state.client.request<{
+      ok: boolean;
+      agents: number;
+      bindings: number;
+      telegramAccounts: number;
+    }>("soloCompany.roles.applyConfig");
+    state.soloRolesError = `Config applied: ${result.agents} agent(s), ${result.bindings} binding(s), ${result.telegramAccounts} Telegram account(s). Restart gateway to take effect.`;
+  } catch (err) {
+    state.soloRolesError = `Failed to apply config: ${String(err)}`;
+  } finally {
+    state.soloRolesApplying = false;
+  }
+}
+
 export async function loadSoloProjects(state: State): Promise<void> {
   if (!state.client) {
     return;
