@@ -60,7 +60,7 @@ export function registerGatewayMethods(
       const agentsList = roles.map((r) => ({
         id: r.agentId,
         ...(r.workspace ? { workspace: r.workspace } : {}),
-        model: r.model ? { default: r.model } : undefined,
+        ...(r.model ? { model: r.model } : {}),
       }));
 
       // Build bindings for roles with telegram tokens
