@@ -53,6 +53,7 @@ export const BUNDLED_ENABLED_BY_DEFAULT = new Set<string>([
   "qianfan",
   "qwen-portal-auth",
   "sglang",
+  "solo-company",
   "synthetic",
   "talk-voice",
   "together",
